@@ -2,10 +2,9 @@ def usr(robot):
 	import struct
 	import math
 
-	desired_distance = 0.17 #use this variable to set desired distance of orbit
-	i = 0
-	while i <= 100:
-		i += 1
+	desired_distance = 0.19 #use this variable to set desired distance of orbit
+	
+	while True:
 
 		pose_t=robot.get_pose()
 
@@ -19,8 +18,7 @@ def usr(robot):
 			position = robot.get_pose()
 			if position:
 				rID = robot.id
-				if rID == 1
-			## this if allows me to know if robot 1 is to the right or left of robot 0 because position of robot 0 will always be subtracted from robot 1
+				if rID == 1:
 					xdif = position[0] - pose_rxed[0]
 					ydif = position[1] - pose_rxed[1]
 
@@ -28,7 +26,26 @@ def usr(robot):
 
 					distDif = desired_distance - distance
 
-					print(position[0],rID,position[1])
-					print('robot ',rID,' received position ',pose_rxed[0],pose_rxed[1],' from robot ', pose_rxed[2],i)
-					print(distDif)
+					if distDif > 0.015:
+						robot.set_vel(69,43)
+						robot.set_led(100,0,0)
+					elif distDif < -0.015:
+						robot.set_vel(71,41)
+						robot.set_led(0,100,0)
+					elif 0.015 > distDif > 0:
+						robot.set_vel(70,43)
+						robot.set_led(100,0,0)
+					elif 0 > distDif > -0.015:
+						robot.set_vel(70,41)
+						robot.set_led(0,100,0)
+					elif distDif == 0:
+						robot.set_vel(70,42)
+
+					robot.send_msg(struct.pack('ff', distDif,distance))
+
+			if robot.id == 0:
+				msg = robot.recv_msg()
+				distns = struct.unpack(msg[0][:8])
+
+			print(distns[1])
 
