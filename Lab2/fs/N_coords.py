@@ -22,5 +22,6 @@ for i in range(0,30):
             coordinates.append(coordinate)
 
 list_of_lists = [list(elem) for elem in coordinates]
-print(len(coordinates))
+print(coordinates)
+print('\n')
 print(list_of_lists)
