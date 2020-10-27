@@ -112,5 +112,6 @@ def usr(robot):
 		coords_in_N[i][0] = 29 - coords_in_N[i][0]
 
 	for c in range(0,len(coords_in_N)):
-		if (coords_in_N[c][0]) <= pos[0] <= (coords_in_N[c][0]+1) and (coords_in_N[c][1]) <= pos[1] <= (coords_in_N[c][1]):
+		if (coords_in_N[c][0]) <= pos[0] <= (coords_in_N[c][0]+1) and (coords_in_N[c][1]) <= pos[1] <= (coords_in_N[c][1]) \
+			or pos[0] <= 2 or pos[0] >=28:
 			robot.set_led(0,100,0)
