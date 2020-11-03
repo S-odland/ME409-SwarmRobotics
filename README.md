@@ -1,5 +1,5 @@
 # ME409-SwarmRobotics
-This course consists of reading various research papers on swarm algorithms and implementations and then mimicking them on our own in Python in the Docker environmnet
+#### This course consists of reading various research papers on swarm algorithms and implementations and then mimicking them on our own in Python in the Docker environmnet
 
 ## LAB 1
 * Getting used to the Docker environment through a simple orbit algorithm
