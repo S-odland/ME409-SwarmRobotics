@@ -21,12 +21,7 @@ def usr(robot):
 	import struct
 	import math
 	import timeit
-
-	light = (0,0)
-
-## takes robot heading and light position to calculate movement for robot to aligh towards light
-	def alignLight(light,robot_head ):
-
+	import time
 
 	if robot.assigned_id==0:
 		robot.set_led(100,0,0)
@@ -34,9 +29,44 @@ def usr(robot):
 		robot.set_led(0,100,0)
 	else:
 		robot.set_led(0,0,100)
+	
+	def alignHeading(theta,phi):
+		if phi < 0:
+			if abs(theta - phi) > 0.05:
+				robot.set_vel(-25,25)
+			else:
+				robot.set_vel(100,100)
+		else:
+			if abs(abs(theta) - phi) > 0.05:
+				robot.set_vel(-25,25)
+			else:
+				robot.set_vel(100,100)
+
+	while 1:
+
+		pos_t = robot.get_pose()
+		if pos_t:
+			pos = pos_t
+
+			phi = math.atan(abs(pos[1]/pos[0]))
+			theta = pos[2]
+
+			if pos[0] < 0 and pos[1] > 0:
+				phi = -phi
+				alignHeading(theta,phi)
+			elif pos[0] > 0 and pos[1] < 0:
+				phi = -phi+math.pi
+				alignHeading(theta,phi)
+			elif pos[0] > 0 and pos[1] > 0:
+				phi = phi - math.pi
+				alignHeading(theta,phi)
+			else:
+				alignHeading(theta,phi)
+
+
+
 		
-	robot.set_vel(30,80)
-	while(1):
-		pose_t = robot.get_pose()
-		if pose_t:
-			print(pose_t[2])
+
+
+
+

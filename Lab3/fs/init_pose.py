@@ -34,15 +34,15 @@ def init(swarmsize, x, y, theta, a_ids):
     pass
 '''
 def init(swarmsize, x, y, theta, a_ids):
-	import math
-	import random
-	for i in range(swarmsize):
-		y[i] = (i % 10 ) * 0.3-1
-		x[i] = (i / 10 ) * 0.3-1
-		a_ids[i] = 0
-		theta[i] = 0
-		if i<50:
-			a_ids[i]=0
-		else:
-			a_ids[i]=1
-	pass
+    import math
+    import random
+    for i in range(swarmsize):
+        y[i] = (i % 10 ) * 0.3-1
+        x[i] = (i / 10 ) * 0.3-1
+        a_ids[i] = 0
+        theta[i] = 0
+        if i<50:
+            a_ids[i]=0
+        else:
+            a_ids[i]=1
+    pass
