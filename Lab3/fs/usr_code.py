@@ -34,35 +34,42 @@ def usr(robot):
 		if phi < 0:
 			if abs(theta - phi) > 0.05:
 				robot.set_vel(-25,25)
+				return 0
 			else:
 				robot.set_vel(100,100)
+				return 1
 		else:
 			if abs(abs(theta) - phi) > 0.05:
 				robot.set_vel(-25,25)
+				return 0
 			else:
 				robot.set_vel(100,100)
+				return 1
 
-	while 1:
+	def taxis(robot):
+		aligned = 0
+		while not aligned:
 
-		pos_t = robot.get_pose()
-		if pos_t:
-			pos = pos_t
+			pos_t = robot.get_pose()
+			if pos_t:
+				pos = pos_t
 
-			phi = math.atan(abs(pos[1]/pos[0]))
-			theta = pos[2]
+				phi = math.atan(abs(pos[1]/pos[0]))
+				theta = pos[2]
 
-			if pos[0] < 0 and pos[1] > 0:
-				phi = -phi
-				alignHeading(theta,phi)
-			elif pos[0] > 0 and pos[1] < 0:
-				phi = -phi+math.pi
-				alignHeading(theta,phi)
-			elif pos[0] > 0 and pos[1] > 0:
-				phi = phi - math.pi
-				alignHeading(theta,phi)
-			else:
-				alignHeading(theta,phi)
+				if pos[0] < 0 and pos[1] > 0:
+					phi = -phi
+					aligned = alignHeading(theta,phi)
+				elif pos[0] > 0 and pos[1] < 0:
+					phi = -phi+math.pi
+					aligned = alignHeading(theta,phi)
+				elif pos[0] > 0 and pos[1] > 0:
+					phi = phi - math.pi
+					aligned = alignHeading(theta,phi)
+				else:
+					aligned = alignHeading(theta,phi)
 
+	#def repulsion(robot):
 
 
 		
