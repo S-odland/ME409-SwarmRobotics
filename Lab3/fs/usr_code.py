@@ -95,9 +95,11 @@ def usr(robot):
 		return xdot,ydot
 	
 	def getHeading(xdot,ydot):
-
+		phi = ydot/(100)
+		return phi
 
 	while(1):
+
 		dirTaxis = taxisVec(robot)
 		dirRepul,magRepel = repulVec(robot)
 		dirRand = randVec(robot)
@@ -109,8 +111,12 @@ def usr(robot):
 		xAve = (taxisX + repulX + randoX)/3
 		yAve = (taxisY + repulY + randoY)/3
 
+		phi = getHeading(xAve,yAve)
 		
-
+		pos_t = robot.get_pose()
+		if pos_t:
+			pos = pos_t 
+			alignHeading(pos[2],phi,100)
 
 
 
