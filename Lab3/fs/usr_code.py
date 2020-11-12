@@ -66,7 +66,7 @@ def usr(robot):
 					pos = pos_t 
 					rAct = math.hypot(pos[0]-x,pos[1]-y)
 					if rAct < R:
-						phi = math.atan(abs(pos[1]-y/rAct))
+						phi = math.atan(abs(pos[1]-y/rAct)) 
 						vel = k*(2*R-rAct)
 						if pos[0] <= x and pos[1] >= y:
 							phi = phi + math.pi/2
@@ -80,6 +80,7 @@ def usr(robot):
 							phiT += phi
 							phiAve = phiT/len(neighbors)
 							velAve = vel/len(neighbors)
+							alignHeading(pos[2],phiAve,velAve)
 
 					if len(neighbors) > 0 and i > 100: return phiAve,velAve
 					else: return 0,0
