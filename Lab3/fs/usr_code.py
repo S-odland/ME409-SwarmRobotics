@@ -7,54 +7,59 @@ def usr(robot):
 
 	if robot.assigned_id==0:
 		robot.set_led(100,0,0)
-		R = 0.2
+		R = 0.15
 	elif robot.assigned_id==1:
 		robot.set_led(0,100,0)
-		R = 0.3
+		R = 0.25
 	else:
 		robot.set_led(0,0,100)
-		R = 0.4
+		R = 0.35
 	
 	def alignHeading(theta,phi,vel):
 		if phi < 0:
 			if abs(theta - phi) > 0.05:
-				robot.set_vel(-25,25)
+				robot.set_vel(-75,75)
 				return 0
 			else:
 				robot.set_vel(vel,vel)
 				return 1
 		else:
 			if abs(abs(theta) - phi) > 0.05:
-				robot.set_vel(-25,25)
+				robot.set_vel(-75,75)
 				return 0
 			else:
 				robot.set_vel(vel,vel)
 				return 1
 
 	def taxisVec(robot):
-		aligned = 0
 		while 1:
 			pos_t = robot.get_pose()
 			if pos_t:
 				pos = pos_t
-
 				phi = math.atan(abs(pos[1]/pos[0]))
 
 				if pos[0] < 0 and pos[1] > 0:
 					phi = -phi
+					aligned = alignHeading(pos[2],phi,0)
 				elif pos[0] > 0 and pos[1] < 0:
 					phi = -phi+math.pi
+					aligned = alignHeading(pos[2],phi,0)
 				elif pos[0] > 0 and pos[1] > 0:
 					phi = phi - math.pi
-			if aligned == 1:
-				return math.cos(phi)*50,math.sin(phi)*50
+					aligned = alignHeading(pos[2],phi,0)
+				else:
+					aligned = alignHeading(pos[2],phi,0)
+
+				if aligned == 1: return phi
 
 	def repulVec(robot):
-		k = 1000
+		k = 150
 		phiT = 0
 		neighbors = []
 		i = 0
+		aligned = 0
 		while 1:
+			i+=1
 			pos_t = robot.get_pose()
 			if pos_t:
 				pos = pos_t
@@ -64,7 +69,6 @@ def usr(robot):
 				x,y,rId = struct.unpack('ffi',msgs[0][:12])
 				pos_t = robot.get_pose()
 				if pos_t:
-					i += 1
 					pos = pos_t 
 					rAct = math.hypot(pos[0]-x,pos[1]-y)
 					if rAct < R:
@@ -82,8 +86,11 @@ def usr(robot):
 							phiT += phi
 							phiAve = phiT/len(neighbors)
 							velAve = vel/len(neighbors)
+						
+						aligned = alignHeading(pos[2],phi,0)
 
-						if i > 10: return phiAve,velAve
+					if aligned == 1: return phiAve,velAve
+					elif len(neighbors) == 0 and i > 100: return 0,0
 	
 	def randVec(robot):
 		phi = robot.random.uniform(-math.pi,math.pi)
@@ -95,7 +102,7 @@ def usr(robot):
 		return xdot,ydot
 	
 	def getHeading(xdot,ydot):
-		phi = ydot/(100)
+		phi = math.asin(ydot/100)
 		return phi
 
 	while(1):
@@ -104,19 +111,27 @@ def usr(robot):
 		dirRepul,magRepel = repulVec(robot)
 		dirRand = randVec(robot)
 
-		taxisX,taxisY = getDot(dirTaxis,50)
-		repulX,repulY = getDot(dirRepul,magRepel)
-		randoX,randoY = getDot(dirRand,25)
+		if dirRepul != 0:
+			taxisX,taxisY = getDot(dirTaxis,50)
+			repulX,repulY = getDot(dirRepul,magRepel)
+			randoX,randoY = getDot(dirRand,25)
 
-		xAve = (taxisX + repulX + randoX)/3
-		yAve = (taxisY + repulY + randoY)/3
+			xave = (taxisX + repulX + randoX)/3
+			yave = (taxisY + repulY + randoY)/3
+		else:
+			taxisX,taxisY = getDot(dirTaxis,100)
+			randoX,randoY = getDot(dirRand,100)
 
-		phi = getHeading(xAve,yAve)
-		
+			xave = (taxisX + randoX)/2
+			yave = (taxisY + randoY)/2			
+
+		phi = getHeading(xave,yave)
 		pos_t = robot.get_pose()
 		if pos_t:
-			pos = pos_t 
+			pos = pos_t
 			alignHeading(pos[2],phi,100)
+		
+			time.sleep(10)
 
 
 
