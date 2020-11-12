@@ -40,24 +40,18 @@ def usr(robot):
 
 				if pos[0] < 0 and pos[1] > 0:
 					phi = -phi
-					aligned = alignHeading(pos[2],phi,0)
 				elif pos[0] > 0 and pos[1] < 0:
 					phi = -phi+math.pi
-					aligned = alignHeading(pos[2],phi,0)
 				elif pos[0] > 0 and pos[1] > 0:
 					phi = phi - math.pi
-					aligned = alignHeading(pos[2],phi,0)
-				else:
-					aligned = alignHeading(pos[2],phi,0)
 
-				if aligned == 1: return phi
+				return phi
 
 	def repulVec(robot):
-		k = 150
+		k = 1000
 		phiT = 0
 		neighbors = []
 		i = 0
-		aligned = 0
 		while 1:
 			i+=1
 			pos_t = robot.get_pose()
@@ -86,11 +80,9 @@ def usr(robot):
 							phiT += phi
 							phiAve = phiT/len(neighbors)
 							velAve = vel/len(neighbors)
-						
-						aligned = alignHeading(pos[2],phi,0)
 
-					if aligned == 1: return phiAve,velAve
-					elif len(neighbors) == 0 and i > 100: return 0,0
+					if len(neighbors) > 0 and i > 100: return phiAve,velAve
+					else: return 0,0
 	
 	def randVec(robot):
 		phi = robot.random.uniform(-math.pi,math.pi)
@@ -112,9 +104,9 @@ def usr(robot):
 		dirRand = randVec(robot)
 
 		if dirRepul != 0:
-			taxisX,taxisY = getDot(dirTaxis,50)
+			taxisX,taxisY = getDot(dirTaxis,magRepel*0.9)
 			repulX,repulY = getDot(dirRepul,magRepel)
-			randoX,randoY = getDot(dirRand,25)
+			randoX,randoY = getDot(dirRand,magRepel*0.75)
 
 			xave = (taxisX + repulX + randoX)/3
 			yave = (taxisY + repulY + randoY)/3
@@ -126,12 +118,14 @@ def usr(robot):
 			yave = (taxisY + randoY)/2			
 
 		phi = getHeading(xave,yave)
-		pos_t = robot.get_pose()
-		if pos_t:
-			pos = pos_t
-			alignHeading(pos[2],phi,100)
-		
-			time.sleep(10)
+		aligned = 0
+		while not aligned:
+			pos_t = robot.get_pose()
+			if pos_t:
+				pos = pos_t
+				aligned = alignHeading(pos[2],phi,100)
+			
+		time.sleep(10)
 
 
 
