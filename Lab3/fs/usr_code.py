@@ -5,6 +5,8 @@ def usr(robot):
 	import time
 	import numpy as np
 
+	## TODO: change phi calculations to vectors --> will be a lot easier to sum up dif direction headings this way
+
 	if robot.assigned_id==0:
 		robot.set_led(100,0,0)
 		R = 0.25
@@ -77,7 +79,7 @@ def usr(robot):
 						weight = k*(2*R-rAct)
 
 						if pos[0] < x and pos[1] == y:
-							phi_r = -math.pi
+							phi_r = math.pi
 						elif pos[0] > x and pos[1] == y:
 							phi_r = 0
 						elif pos[0] == x and pos[1] < y:
@@ -90,7 +92,6 @@ def usr(robot):
 							phi_r = -phi_r
 						elif pos[0] < x and pos[1] < y:
 							phi_r = phi_r - math.pi
-
 
 						if rId not in neighbors:
 							neighbors.append(rId)
@@ -111,9 +112,9 @@ def usr(robot):
 				pos = pos_t
 				phi_total = phi_s+phi_rand+phi_t
 				if phi_total < -math.pi:
-					phi_total = phi_total % -math.pi
+					phi_total = (phi_total % -math.pi) + math.pi
 				elif phi_total > math.pi:
-					phi_total = phi_total % math.pi
+					phi_total = (phi_total % math.pi) - math.pi
 
 				aligned = alignHeading(pos[2],phi_total)
 				if aligned == 1:
