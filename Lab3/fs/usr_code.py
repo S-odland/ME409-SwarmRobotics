@@ -5,19 +5,19 @@ def usr(robot):
 	import time
 	import numpy as np
 
-	## TODO: change phi calculations to vectors --> will be a lot easier to sum up dif direction headings this way
-
 	if robot.assigned_id==0:
 		robot.set_led(100,0,0)
-		R = 0.25
+		R = 0.15
 	elif robot.assigned_id==1:
 		robot.set_led(0,100,0)
-		R = 0.35
+		R = 0.30
 	else:
 		robot.set_led(0,0,100)
-		R = 0.35
+		R = 0.4
 	
 	def alignHeading(theta,phi):
+		# if phi > math.pi:
+		# 	phi = (phi % math.pi) - math.pi
 		if theta < phi and abs(theta - phi) > 0.25:
 			robot.set_vel(-40,40)
 			return 0
@@ -29,98 +29,67 @@ def usr(robot):
 			return 1
 
 	while 1:
-
-		k = 600
 		phi_s = 0
 		neighbors = []
 		i = 0
-		state = 1
+		k = 3
 
+		state = 1
 		while state == 1:
 			pos_t = robot.get_pose()
 			if pos_t:
 				pos = pos_t
-				phi_t = math.atan(abs(pos[1]/pos[0]))
-
-				if pos[0] < 0 and pos[1] > 0:
-					phi_t = -phi_t
-				elif pos[0] > 0 and pos[1] < 0:
-					phi_t = -phi_t + math.pi
-				elif pos[0] > 0 and pos[1] > 0:
-					phi_t = phi_t - math.pi
-				elif pos[0] < 0 and pos[1] == 0:
-					phi_r = 0
-				elif pos[0] > 0 and pos[1] == 0:
-					phi_r = -math.pi
-				elif pos[0] == 0 and pos[1] < 0:
-					phi_r = math.pi/2
-				elif pos[0] == 0 and pos[1] > 0:
-					phi_r = -math.pi/2
+				mag_vec = math.hypot(pos[0],pos[1])
+				t_vec = [-pos[0]/mag_vec,-pos[1]/mag_vec] ## gives unit vector of taxis
 
 				state = 2
 
+		re_vec_s = [0,0]
 		while state == 2:
-
 			pos_t = robot.get_pose()
 			if pos_t:
 				pos = pos_t
 				robot.send_msg(struct.pack("ffi",pos[0],pos[1],robot.id))
+
 			msgs = robot.recv_msg()
 			if len(msgs) > 0:
 				x,y,rId = struct.unpack('ffi',msgs[0][:12])
 				pos_t = robot.get_pose()
 				if pos_t:
-
 					i += 1
 					pos = pos_t 
 					rAct = math.hypot(pos[0]-x,pos[1]-y)
+					
 					if rAct < R:
-						phi_r = math.asin(abs((pos[1]-y)/rAct)) 
-						weight = k*(2*R-rAct)
-
-						if pos[0] < x and pos[1] == y:
-							phi_r = math.pi
-						elif pos[0] > x and pos[1] == y:
-							phi_r = 0
-						elif pos[0] == x and pos[1] < y:
-							phi_r = -math.pi/2
-						elif pos[0] == x and pos[1] > y:
-							phi_r = math.pi/2					
-						elif pos[0] < x and pos[1] > y:
-							phi_r = -phi_r + math.pi
-						elif pos[0] > x and pos[1] < y:
-							phi_r = -phi_r
-						elif pos[0] < x and pos[1] < y:
-							phi_r = phi_r - math.pi
+						weight = k*(R-rAct)
+						re_vec = [weight*(pos[0]-x),(pos[1]-y)]
 
 						if rId not in neighbors:
 							neighbors.append(rId)
-							phi_s += phi_r
-							if phi_s < -math.pi:
-								phi_s = phi_s % -math.pi 
-							if phi_s > math.pi:
-								phi_s = phi_s % math.pi
-							weight = weight/len(neighbors)
-					if i > 25:
-						state = 3
+							re_vec_s[0] += re_vec[0]
+							re_vec_s[1] += re_vec[1]
 
-		phi_rand = robot.random.uniform(-math.pi,math.pi)
-		aligned = 0
+			if i > 10:
+				state = 3
+
 		while state == 3:
+			rand_x = robot.random.uniform(-1,1)
+			rand_y = robot.random.uniform(-1,1)
+			mag = math.hypot(rand_x,rand_y)
+			ra_vec = [rand_x/mag,rand_y/mag]
+			state = 4
+		
+		while state == 4:
 			pos_t = robot.get_pose()
 			if pos_t:
 				pos = pos_t
-				phi_total = phi_s+phi_rand+phi_t
-				if phi_total < -math.pi:
-					phi_total = (phi_total % -math.pi) + math.pi
-				elif phi_total > math.pi:
-					phi_total = (phi_total % math.pi) - math.pi
+				tot_vec = [1.6*ra_vec[0] + t_vec[0] + re_vec_s[0],0.6*ra_vec[1] + t_vec[1] + re_vec_s[1]]
+				phi = math.atan2(tot_vec[1],tot_vec[0])
+				aligned = alignHeading(pos[2],phi)
+				if aligned:
+					state = 5
 
-				aligned = alignHeading(pos[2],phi_total)
-				if aligned == 1:
-					state = 4
-		
-		while state == 4:
+		while state == 5:
 			robot.set_vel(100,100)
 			time.sleep(1)
 			robot.set_vel(0,0)

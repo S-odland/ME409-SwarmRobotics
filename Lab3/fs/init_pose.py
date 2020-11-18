@@ -46,3 +46,37 @@ def init(swarmsize, x, y, theta, a_ids):
         else:
             a_ids[i]=1
     pass
+
+
+
+##phi_t = math.atan(abs(pos[1]/pos[0]))
+# if pos[0] < 0 and pos[1] > 0:
+# 	phi_t = -phi_t
+# elif pos[0] > 0 and pos[1] < 0:
+# 	phi_t = -phi_t + math.pi
+# elif pos[0] > 0 and pos[1] > 0:
+# 	phi_t = phi_t - math.pi
+# elif pos[0] < 0 and pos[1] == 0:
+# 	phi_r = 0
+# elif pos[0] > 0 and pos[1] == 0:
+# 	phi_r = -math.pi
+# elif pos[0] == 0 and pos[1] < 0:
+# 	phi_r = math.pi/2
+# elif pos[0] == 0 and pos[1] > 0:
+# 	phi_r = -math.pi/2
+
+##phi_r = math.asin(abs((pos[1]-y)/rAct)) 
+# if pos[0] < x and pos[1] == y:
+# 	phi_r = math.pi
+# elif pos[0] > x and pos[1] == y:
+# 	phi_r = 0
+# elif pos[0] == x and pos[1] < y:
+# 	phi_r = -math.pi/2
+# elif pos[0] == x and pos[1] > y:
+# 	phi_r = math.pi/2					
+# elif pos[0] < x and pos[1] > y:
+# 	phi_r = -phi_r + math.pi
+# elif pos[0] > x and pos[1] < y:
+# 	phi_r = -phi_r
+# elif pos[0] < x and pos[1] < y:
+# 	phi_r = phi_r - math.pi
