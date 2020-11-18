@@ -7,21 +7,16 @@ def usr(robot):
 
 	if robot.assigned_id==0:
 		robot.set_led(100,0,0)
-		R = 0.15
+		R = 0.4
 	elif robot.assigned_id==1:
 		robot.set_led(0,100,0)
-		R = 0.30
+		R = 0.4
 	else:
 		robot.set_led(0,0,100)
 		R = 0.4
 	
 	def alignHeading(theta,phi):
-		# if phi > math.pi:
-		# 	phi = (phi % math.pi) - math.pi
-		if theta < phi and abs(theta - phi) > 0.25:
-			robot.set_vel(-40,40)
-			return 0
-		elif theta > phi and abs(theta - phi) > 0.25:
+		if abs(theta - phi) > 0.1:
 			robot.set_vel(40,-40)
 			return 0
 		else:
@@ -29,10 +24,10 @@ def usr(robot):
 			return 1
 
 	while 1:
-		phi_s = 0
+		j = 0
 		neighbors = []
 		i = 0
-		k = 3
+		k = 500
 
 		state = 1
 		while state == 1:
@@ -41,7 +36,6 @@ def usr(robot):
 				pos = pos_t
 				mag_vec = math.hypot(pos[0],pos[1])
 				t_vec = [-pos[0]/mag_vec,-pos[1]/mag_vec] ## gives unit vector of taxis
-
 				state = 2
 
 		re_vec_s = [0,0]
@@ -50,6 +44,7 @@ def usr(robot):
 			if pos_t:
 				pos = pos_t
 				robot.send_msg(struct.pack("ffi",pos[0],pos[1],robot.id))
+				j += 1
 
 			msgs = robot.recv_msg()
 			if len(msgs) > 0:
@@ -68,8 +63,11 @@ def usr(robot):
 							neighbors.append(rId)
 							re_vec_s[0] += re_vec[0]
 							re_vec_s[1] += re_vec[1]
-
-			if i > 10:
+			if j > 100:
+				ra_vec = [0,0]
+				re_vec_s = [0,0]
+				state == 4
+			if i > 20:
 				state = 3
 
 		while state == 3:
@@ -78,63 +76,23 @@ def usr(robot):
 			mag = math.hypot(rand_x,rand_y)
 			ra_vec = [rand_x/mag,rand_y/mag]
 			state = 4
-		
+
 		while state == 4:
 			pos_t = robot.get_pose()
 			if pos_t:
 				pos = pos_t
-				tot_vec = [1.6*ra_vec[0] + t_vec[0] + re_vec_s[0],0.6*ra_vec[1] + t_vec[1] + re_vec_s[1]]
-				phi = math.atan2(tot_vec[1],tot_vec[0])
+				tot_vec = [1.9*ra_vec[0] + t_vec[0] + re_vec_s[0],1.9*ra_vec[1] + t_vec[1] + re_vec_s[1]]
+				phi = math.atan2(re_vec_s[1],re_vec_s[0])
 				aligned = alignHeading(pos[2],phi)
 				if aligned:
 					state = 5
-
+		
 		while state == 5:
 			robot.set_vel(100,100)
 			time.sleep(1)
 			robot.set_vel(0,0)
 			state = 1
-	
 
-	
-	# def getDot(phi,vel):
-	# 	xdot = math.cos(phi)*vel
-	# 	ydot = math.sin(phi)*vel
-	# 	return xdot,ydot
-	
-	# def getHeading(xdot,ydot):
-	# 	phi = math.asin(ydot/100)
-	# 	return phi
-
-	# while(1):
-
-	# 	dirTaxis = taxisVec(robot)
-	# 	dirRepul,magRepel = repulVec(robot)
-	# 	dirRand = randVec(robot)
-
-	# 	if dirRepul != 0:
-	# 		taxisX,taxisY = getDot(dirTaxis,magRepel*0.9)
-	# 		repulX,repulY = getDot(dirRepul,magRepel)
-	# 		randoX,randoY = getDot(dirRand,magRepel*0.75)
-
-	# 		xave = (taxisX + repulX + randoX)/3
-	# 		yave = (taxisY + repulY + randoY)/3
-	# 	else:
-	# 		taxisX,taxisY = getDot(dirTaxis,100)
-	# 		randoX,randoY = getDot(dirRand,100)
-
-	# 		xave = (taxisX + randoX)/2
-	# 		yave = (taxisY + randoY)/2			
-
-	# 	phi = getHeading(xave,yave)
-	# 	aligned = 0
-	# 	while not aligned:
-	# 		pos_t = robot.get_pose()
-	# 		if pos_t:
-	# 			pos = pos_t
-	# 			aligned = alignHeading(pos[2],phi,100)
-			
-	# 	time.sleep(10)
 
 
 
