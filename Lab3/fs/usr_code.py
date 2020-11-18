@@ -62,7 +62,8 @@ def usr(robot):
 							neighbors.append(rId)
 							re_vec_s[0] += re_vec[0]
 							re_vec_s[1] += re_vec[1]
-			if j > 100:
+			if j > 100 and len(neighbors) ==0:
+				neighbors = []
 				re_vec_s = [0,0]
 				j = 0
 				i = 0
@@ -70,6 +71,7 @@ def usr(robot):
 			if i > 20:
 				j = 0
 				i = 0
+				neighbors = []
 				state = 3
 		if state == 3:
 			rand_x = robot.random.uniform(-1,1)
@@ -78,20 +80,20 @@ def usr(robot):
 			ra_vec = [rand_x/mag,rand_y/mag]
 			state = 4
 		if state == 4:
-			if math.hypot(re_vec_s[0],re_vec_s[1]) > 6.4:
+			if math.hypot(re_vec_s[0],re_vec_s[1]) > 5:
 				re_vec_s[0] = re_vec_s[0]/mag
 				re_vec_s[1] = re_vec_s[1]/mag
 			pos_t = robot.get_pose()
 			if pos_t:
 				pos = pos_t
-				tot_vec = [1*ra_vec[0] + t_vec[0] + re_vec_s[0],1*ra_vec[1] + t_vec[1] + re_vec_s[1]]
+				tot_vec = [1.4*ra_vec[0] + t_vec[0] + re_vec_s[0],1.4*ra_vec[1] + t_vec[1] + re_vec_s[1]]
 				phi = math.atan2(tot_vec[1],tot_vec[0])
 				aligned = alignHeading(pos[2],phi)
 				if aligned:
 					state = 5
 		if state == 5:
 			robot.set_vel(100,100)
-			time.sleep(2)
+			time.sleep(1)
 			robot.set_vel(0,0)
 			state = 1
 
