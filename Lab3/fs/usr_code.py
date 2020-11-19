@@ -5,6 +5,19 @@ def usr(robot):
 	import time
 	import numpy as np
 
+		# this was my init pose loop for a swarm of 150 robots
+	    #     y[i] = (i % 10 ) * 0.3-1
+        # x[i] = (i / 10 ) * 0.3-1
+        # a_ids[i] = 0
+        # theta[i] = 0
+        # j = i % 3
+        # if j == 0:
+        #     a_ids[i]=0
+        # elif j == 1:
+        #     a_ids[i]=1
+        # else:
+        #     a_ids[i] = 2
+
 	if robot.assigned_id==0:
 		robot.set_led(100,0,0)
 		R = 0.1
