@@ -14,7 +14,8 @@
 ## LAB 3
 * Develop an algorithm using the brazil nut effect to create 3 concentric rings around the center of an arena
 * Approach is based off of a paper discussed in class
-* The first image is with a 100 robot swarm (50 in each ring) and the second image is with a 150 robot swarm (50 in each ring)
+* The first image is with a 150 robot swarm (50 in each ring, 3 rings) and the second image is with a 100 robot swarm (50 in each ring, 2 rings)
 
-![100 Robot Swarm](https://github.com/S-odland/ME409-SwarmRobotics/blob/main/Lab3/100brazil.jpg) 
 ![150 Robot Swarm](https://github.com/S-odland/ME409-SwarmRobotics/blob/main/Lab3/150swarm.jpg)
+![100 Robot Swarm](https://github.com/S-odland/ME409-SwarmRobotics/blob/main/Lab3/100brazil.jpg) 
+
