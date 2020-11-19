@@ -8,6 +8,7 @@
 ## LAB 2
 * Develop a hop count algorithm based on a past paper
 * End goal is to create a global coordinate system and using this have the robots form the shape of the Northwestern 'N' using their LEDs
+* A video of this can be seen [here](https://www.youtube.com/watch?v=K2DWJeIYEho)
 
 ![Smoothed N](https://github.com/S-odland/ME409-SwarmRobotics/blob/main/Lab2/N_standard.jpg)
 
