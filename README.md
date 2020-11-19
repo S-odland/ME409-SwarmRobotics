@@ -19,3 +19,4 @@
 ![150 Robot Swarm](https://github.com/S-odland/ME409-SwarmRobotics/blob/main/Lab3/150swarm.jpg)
 ![100 Robot Swarm](https://github.com/S-odland/ME409-SwarmRobotics/blob/main/Lab3/100brazil.jpg) 
 
+![Simulation](https://www.youtube.com/watch?v=9ruEczgLMNE)
