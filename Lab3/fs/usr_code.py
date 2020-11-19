@@ -10,14 +10,14 @@ def usr(robot):
 		R = 0.1
 	elif robot.assigned_id==1:
 		robot.set_led(0,100,0)
-		R = 0.31
+		R = 0.23
 	else:
 		robot.set_led(0,0,100)
 		R = 0.4
 	
 	def alignHeading(theta,phi):
 		if abs(theta - phi) > 0.1:
-			robot.set_vel(40,-40)
+			robot.set_vel(70,-70)
 			return 0
 		else:
 			robot.set_vel(0,0)
@@ -27,9 +27,11 @@ def usr(robot):
 	j = 0
 	neighbors = []
 	i = 0
-	k = 150
+	k = 1000
 	re_vec_s = [0,0]
+
 	while 1:
+
 		if state == 1:
 			pos_t = robot.get_pose()
 			if pos_t:
@@ -41,12 +43,14 @@ def usr(robot):
 				else:
 					t_vec = [-pos[0]/mag_vec,-pos[1]/mag_vec] ## gives unit vector of taxis
 					state = 2
+
 		if state == 2:
-			j += 1
+			
 			pos_t = robot.get_pose()
 			if pos_t:
 				pos = pos_t
 				robot.send_msg(struct.pack("ffi",pos[0],pos[1],robot.id))
+				j += 1
 			msgs = robot.recv_msg()
 			if len(msgs) > 0:
 				x,y,rId = struct.unpack('ffi',msgs[0][:12])
@@ -57,44 +61,47 @@ def usr(robot):
 					rAct = math.hypot(pos[0]-x,pos[1]-y)
 					if rAct < R:
 						weight = k*(R-rAct)
-						re_vec = [weight*(pos[0]-x),(pos[1]-y)]
+						re_vec = [weight*(pos[0]-x),weight*(pos[1]-y)]
 						if rId not in neighbors:
 							neighbors.append(rId)
 							re_vec_s[0] += re_vec[0]
 							re_vec_s[1] += re_vec[1]
-			if j > 100 and len(neighbors) ==0:
-				neighbors = []
-				re_vec_s = [0,0]
-				j = 0
-				i = 0
-				state = 3
-			if i > 20:
+			if i > 20 or j > 350:
 				j = 0
 				i = 0
 				neighbors = []
 				state = 3
+
 		if state == 3:
 			rand_x = robot.random.uniform(-1,1)
 			rand_y = robot.random.uniform(-1,1)
 			mag = math.hypot(rand_x,rand_y)
 			ra_vec = [rand_x/mag,rand_y/mag]
 			state = 4
+
 		if state == 4:
-			if math.hypot(re_vec_s[0],re_vec_s[1]) > 5:
-				re_vec_s[0] = re_vec_s[0]/mag
-				re_vec_s[1] = re_vec_s[1]/mag
+			if math.hypot(re_vec_s[0],re_vec_s[1]) > 8:
+				rat = 8/math.hypot(re_vec_s[0],re_vec_s[1])
+				re_vec_s[0] = re_vec_s[0]*rat
+				re_vec_s[1] = re_vec_s[1]*rat
+
 			pos_t = robot.get_pose()
 			if pos_t:
 				pos = pos_t
-				tot_vec = [1.4*ra_vec[0] + t_vec[0] + re_vec_s[0],1.4*ra_vec[1] + t_vec[1] + re_vec_s[1]]
+				tot_vec = [0.6*ra_vec[0] + t_vec[0] + re_vec_s[0],0.6*ra_vec[1] + t_vec[1] + re_vec_s[1]]
+				tot_mag = math.hypot(ra_vec[0],ra_vec[1]) + math.hypot(t_vec[0],t_vec[1]) + math.hypot(re_vec_s[0],re_vec_s[1])
 				phi = math.atan2(tot_vec[1],tot_vec[0])
 				aligned = alignHeading(pos[2],phi)
 				if aligned:
 					state = 5
+
 		if state == 5:
-			robot.set_vel(100,100)
+			vel = 100*tot_mag/7.5
+			#robot.set_vel(vel,vel)
+			robot.set_vel(75,75)
 			time.sleep(1)
 			robot.set_vel(0,0)
+			re_vec_s = [0,0]
 			state = 1
 
 

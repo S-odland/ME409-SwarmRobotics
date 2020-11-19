@@ -41,15 +41,17 @@ def init(swarmsize, x, y, theta, a_ids):
         x[i] = (i / 10 ) * 0.3-1
         a_ids[i] = 0
         theta[i] = 0
-        if i % 2:
+        if i < 50:
             a_ids[i]=0
-        else:
+        elif i >= 50 and i < 100:
             a_ids[i]=1
+        else:
+            a_ids[i] = 2
     pass
 
 
 
-##phi_t = math.atan(abs(pos[1]/pos[0]))
+
 # if pos[0] < 0 and pos[1] > 0:
 # 	phi_t = -phi_t
 # elif pos[0] > 0 and pos[1] < 0:
