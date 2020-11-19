@@ -15,6 +15,7 @@ def usr(robot):
 		robot.set_led(0,0,100)
 		R = 0.4
 	
+	## function to align heading of robot with desired angle -- error of 10%
 	def alignHeading(theta,phi):
 		if abs(theta - phi) > 0.1:
 			robot.set_vel(70,-70)
@@ -30,6 +31,12 @@ def usr(robot):
 	k = 1000
 	re_vec_s = [0,0]
 
+   # state machine functions as follows:
+   # state 1: taxis vector calculation
+   # state 2: repulsion vector calculation
+   # state 3: random vector calculation
+   # state 4: align heading with desired angle after everything summed up
+   # state 5: move for a specified amount of time
 	while 1:
 
 		if state == 1:
@@ -59,13 +66,16 @@ def usr(robot):
 					i += 1
 					pos = pos_t 
 					rAct = math.hypot(pos[0]-x,pos[1]-y)
+					## check virtual overlap
 					if rAct < R:
 						weight = k*(R-rAct)
 						re_vec = [weight*(pos[0]-x),weight*(pos[1]-y)]
+						#make sure that this robot hasn't been calculated in vector sum
 						if rId not in neighbors:
 							neighbors.append(rId)
 							re_vec_s[0] += re_vec[0]
 							re_vec_s[1] += re_vec[1]
+			# i is the inner loop (recieved messages) j is outer loop -- ensures that lone robots dont get stuck in state 2
 			if i > 20 or j > 350:
 				j = 0
 				i = 0
@@ -76,18 +86,21 @@ def usr(robot):
 			rand_x = robot.random.uniform(-1,1)
 			rand_y = robot.random.uniform(-1,1)
 			mag = math.hypot(rand_x,rand_y)
-			ra_vec = [rand_x/mag,rand_y/mag]
+			ra_vec = [rand_x/mag,rand_y/mag] # normalizes random vec to be a unit vec
 			state = 4
 
 		if state == 4:
+			# normalizing repulsion vec to be below 8
 			if math.hypot(re_vec_s[0],re_vec_s[1]) > 8:
 				rat = 8/math.hypot(re_vec_s[0],re_vec_s[1])
 				re_vec_s[0] = re_vec_s[0]*rat
 				re_vec_s[1] = re_vec_s[1]*rat
 
+# found that the repulsion vec weight to be higher made the brazil effect clearer
 			pos_t = robot.get_pose()
 			if pos_t:
 				pos = pos_t
+				# summing up vector
 				tot_vec = [0.6*ra_vec[0] + t_vec[0] + re_vec_s[0],0.6*ra_vec[1] + t_vec[1] + re_vec_s[1]]
 				tot_mag = math.hypot(ra_vec[0],ra_vec[1]) + math.hypot(t_vec[0],t_vec[1]) + math.hypot(re_vec_s[0],re_vec_s[1])
 				phi = math.atan2(tot_vec[1],tot_vec[0])
@@ -95,6 +108,7 @@ def usr(robot):
 				if aligned:
 					state = 5
 
+## hard coding the velocity makes it converge faster
 		if state == 5:
 			vel = 100*tot_mag/7.5
 			#robot.set_vel(vel,vel)
