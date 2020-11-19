@@ -16,4 +16,5 @@
 * Approach is based off of a paper discussed in class
 * The first image is with a 100 robot swarm (50 in each ring) and the second image is with a 150 robot swarm (50 in each ring)
 
-![100 Robot Swarm](https://github.com/S-odland/ME409-SwarmRobotics/blob/main/Lab3/100brazil.jpg) ![150 Robot Swarm](https://github.com/S-odland/ME409-SwarmRobotics/blob/main/Lab3/150swarm.jpg)
+![100 Robot Swarm](https://github.com/S-odland/ME409-SwarmRobotics/blob/main/Lab3/100brazil.jpg) 
+![150 Robot Swarm](https://github.com/S-odland/ME409-SwarmRobotics/blob/main/Lab3/150swarm.jpg)
