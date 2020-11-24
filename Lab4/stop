@@ -1,1 +1,1 @@
-docker rm -f cs-local
+docker rm -f cs-local &
