@@ -19,6 +19,10 @@
 * A video of this can be seen [here](https://www.youtube.com/watch?v=9ruEczgLMNE)
 
 ![150 Robot Swarm](https://github.com/S-odland/ME409-SwarmRobotics/blob/main/Lab3/150swarm.jpg)
-![100 Robot Swarm](https://github.com/S-odland/ME409-SwarmRobotics/blob/main/Lab3/100brazil.jpg) 
+![100 Robot Swarm](https://github.com/S-odland/ME409-SwarmRobotics/blob/main/Lab3/100brazil.jpg)
+
+## LAB 4
+* Develop a flocking algorithm for a robot swarm through the summation of goal vectors, alignment vectors and repulsion vectors
+* More to come as I continue working on this project!!
 
 
