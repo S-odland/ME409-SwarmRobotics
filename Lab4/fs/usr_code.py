@@ -2,6 +2,7 @@ def usr(robot):
     import struct
     import math
     import timeit
+    import time
 
     R = 0.25 ## radius of separation for robots
 
@@ -21,6 +22,7 @@ def usr(robot):
     k = 1000
     sep_vec_s = [0,0]
     com = [0,0]
+    al_h = [0,0]
 
     ## state 1: migration vector
     ## state 2: separation vector
@@ -45,11 +47,11 @@ def usr(robot):
             pos_t = robot.get_pose()
             if pos_t:
                 pos = pos_t
-                robot.send_msg(struct.pack("ffi",pos[0],pos[1],robot.id))
+                robot.send_msg(struct.pack("fffi",pos[0],pos[1],pos[2],robot.id))
                 j += 1
             msgs = robot.recv_msg()
             if len(msgs) > 0:
-                x,y,rId = struct.unpack('ffi',msgs[0][:12])
+                x,y,theta,rId = struct.unpack('fffi',msgs[0][:16])
                 pos_t = robot.get_pose()
                 if pos_t:
                     pos = pos_t 
@@ -61,6 +63,8 @@ def usr(robot):
                         sep_vec = [weight*(pos[0]-x),weight*(pos[1]-y)]
                         #make sure that this robot hasn't been calculated in vector sum
                         if rId not in neighbors:
+                            al_h[0] += math.cos(theta)
+                            al_h[1] += math.sin(theta)
                             neighbors.append(rId)
                             com[0] += x
                             com[1] += y
@@ -68,11 +72,14 @@ def usr(robot):
                             sep_vec_s[1] += sep_vec[1]
             # i is the inner loop (recieved messages) j is outer loop -- ensures that lone robots dont get stuck in state 2
             if i > 15 or j > 350:
-                com[0] = (com[0] + pos[0])/len(neighbors)
-                com[1] = (com[1] + pos[1])/len(neighbors)
-
+                ## center of mass of all the robots
+                com[0] = (com[0] + pos[0])/(len(neighbors) + 1)
+                com[1] = (com[1] + pos[1])/(len(neighbors) + 1)
+                ## vector aligned with the average heading of the swarm
+                al_h[0] = (al_h[0] + math.cos(pos[2]))/(len(neighbors) + 1)
+                al_h[1] = (al_h[1] + math.sin(pos[2]))/(len(neighbors) + 1)
+                ## vector towards the center of mass of the neighbors
                 coh_vec = [pos[0] - com[0],pos[1] - com[1]]
-
                 j = 0
                 i = 0
                 neighbors = []
