@@ -9,7 +9,7 @@ def usr(robot):
 	## function to align heading of robot with desired angle -- error of 10%
     def alignHeading(theta,phi):
         ## the idea with this conditional is that there are four checks to see if we want left turning or right turning for the shortest degree rotation
-        if ((phi < 0 and theta > phi) or (phi < 0 and phi < theta < (math.pi + phi))) or ((phi > 0 and theta > phi) or (phi > 0 and (math.pi - phi) < theta < phi):
+        if ((phi < 0 and theta > phi) or (phi < 0 and phi < theta < (math.pi + phi))) or ((phi > 0 and theta > phi) or (phi > 0 and (math.pi - phi) < theta < phi)):
             turn_r = -1
             turn_l = 1
         else:
@@ -20,7 +20,6 @@ def usr(robot):
             robot.set_vel(50 + turn_l*25,50 + turn_r*25) ## makes it so that turning depends on the path of shortest rotation (may have to deal with sharper turns later)
             return 0
         else:
-            robot.set_vel(0,0)
             return 1
 
 ## possibly add a conditional or a variable that scales to change how sharp a turn is?
@@ -93,7 +92,7 @@ def usr(robot):
                 aln_vec = [(al_h[0] + math.cos(pos[2]))/(len(neighbors) + 1), \
                            (al_h[1] + math.sin(pos[2]))/(len(neighbors) + 1)]
                 ## vector towards the center of mass of the neighbors
-                coh_vec = [pos[0] - com[0],pos[1] - com[1]]
+                coh_vec = [-(pos[0] - com[0]),-(pos[1] - com[1])]
                 j = 0
                 i = 0
                 neighbors = []
@@ -115,8 +114,6 @@ def usr(robot):
         ## hard coding the velocity makes it converge faster
         if state == 4:
             robot.set_vel(75,75)
-            time.sleep(1)
-            robot.set_vel(0,0)
             sep_vec_s = [0,0]
             com = [0,0]
             coh_vec = [0,0]
