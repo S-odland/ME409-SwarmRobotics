@@ -25,9 +25,10 @@ def usr(robot):
     al_h = [0,0]
 
     ## state 1: migration vector
-    ## state 2: separation vector
-    ## state 3: cohesion vector
-    ## state 4: alignment vector
+    ## state 2: separation, cohesion, alignment vector
+    ## state 3: summation and alignment
+    ## state 4: movement (we can either have swarm sense, align, move
+    ##          or do all of it simultaneously)
 
     while 1:
 
@@ -112,6 +113,7 @@ def usr(robot):
             com = [0,0]
             coh_vec = [0,0]
             mig_vec = [0,0]
+            al_h = [0,0]
             state = 1
 
 
