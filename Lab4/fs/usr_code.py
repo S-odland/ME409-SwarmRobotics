@@ -28,6 +28,10 @@ def usr(robot):
     ## state 2: separation, cohesion, alignment vector
     ## state 3: summation and alignment
     ## state 4: movement (we can either have swarm sense, align, move or do all of it simultaneously)
+    ##
+    ## If we have continuous motion, state 4 will never have a time.sleep call and will never have the velocity set to 0
+    ## Would have to change align heading to be a rotation + or - a set velocity, i.e. (50 +- 25, 50 -+ 25) or something of the sort
+    ## Would also have to add a case for shortest path of rotation 
 
     while 1:
 
@@ -91,7 +95,7 @@ def usr(robot):
             if pos_t:
                 pos = pos_t
                 # summing up vector
-                tot_vec = [coh_vec[0] + (1/()8*math.sqrt(2))*mig_vec[0] + 1.2*sep_vec_s[0] + aln_vec[0], \
+                tot_vec = [coh_vec[0] + (1/(8*math.sqrt(2)))*mig_vec[0] + 1.2*sep_vec_s[0] + aln_vec[0], \
                            coh_vec[1] + (1/(8*math.sqrt(2)))*mig_vec[1] + 1.2*sep_vec_s[1] + aln_vec[1]]
                 phi = math.atan2(tot_vec[1],tot_vec[0])
                 aligned = alignHeading(pos[2],phi)
