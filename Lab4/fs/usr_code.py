@@ -27,8 +27,7 @@ def usr(robot):
     ## state 1: migration vector
     ## state 2: separation, cohesion, alignment vector
     ## state 3: summation and alignment
-    ## state 4: movement (we can either have swarm sense, align, move
-    ##          or do all of it simultaneously)
+    ## state 4: movement (we can either have swarm sense, align, move or do all of it simultaneously)
 
     while 1:
 
@@ -77,8 +76,8 @@ def usr(robot):
                 com[0] = (com[0] + pos[0])/(len(neighbors) + 1)
                 com[1] = (com[1] + pos[1])/(len(neighbors) + 1)
                 ## vector aligned with the average heading of the swarm
-                al_h[0] = (al_h[0] + math.cos(pos[2]))/(len(neighbors) + 1)
-                al_h[1] = (al_h[1] + math.sin(pos[2]))/(len(neighbors) + 1)
+                aln_vec = [(al_h[0] + math.cos(pos[2]))/(len(neighbors) + 1), \
+                           (al_h[1] + math.sin(pos[2]))/(len(neighbors) + 1)]
                 ## vector towards the center of mass of the neighbors
                 coh_vec = [pos[0] - com[0],pos[1] - com[1]]
                 j = 0
@@ -87,18 +86,13 @@ def usr(robot):
                 state = 3
 
         if state == 3:
-            # normalizing repulsion vec to be below 8
-            if math.hypot(sep_vec_s[0],sep_vec_s[1]) > 8:
-                rat = 8/math.hypot(sep_vec_s[0],sep_vec_s[1])
-                sep_vec_s[0] = sep_vec_s[0]*rat
-                sep_vec_s[1] = sep_vec_s[1]*rat
-
-        # found that the repulsion vec weight to be higher made the brazil effect clearer
+            # found that the repulsion vec weight to be higher made the brazil effect clearer
             pos_t = robot.get_pose()
             if pos_t:
                 pos = pos_t
                 # summing up vector
-                tot_vec = [coh_vec[0] + mig_vec[0] + sep_vec_s[0],coh_vec[1] + mig_vec[1] + sep_vec_s[1]]
+                tot_vec = [coh_vec[0] + (1/()8*math.sqrt(2))*mig_vec[0] + 1.2*sep_vec_s[0] + aln_vec[0], \
+                           coh_vec[1] + (1/(8*math.sqrt(2)))*mig_vec[1] + 1.2*sep_vec_s[1] + aln_vec[1]]
                 phi = math.atan2(tot_vec[1],tot_vec[0])
                 aligned = alignHeading(pos[2],phi)
                 if aligned:
@@ -114,6 +108,7 @@ def usr(robot):
             coh_vec = [0,0]
             mig_vec = [0,0]
             al_h = [0,0]
+            aln_vec = [0,0]
             state = 1
 
 
