@@ -8,12 +8,22 @@ def usr(robot):
 
 	## function to align heading of robot with desired angle -- error of 10%
     def alignHeading(theta,phi):
+        ## the idea with this conditional is that there are four checks to see if we want left turning or right turning for the shortest degree rotation
+        if ((phi < 0 and theta > phi) or (phi < 0 and phi < theta < (math.pi + phi))) or ((phi > 0 and theta > phi) or (phi > 0 and (math.pi - phi) < theta < phi):
+            turn_r = -1
+            turn_l = 1
+        else:
+            turn_r = 1
+            turn_l = -1
+
         if abs(theta - phi) > 0.1:
-            robot.set_vel(70,-70)
+            robot.set_vel(50 + turn_l*25,50 + turn_r*25) ## makes it so that turning depends on the path of shortest rotation (may have to deal with sharper turns later)
             return 0
         else:
             robot.set_vel(0,0)
             return 1
+
+## possibly add a conditional or a variable that scales to change how sharp a turn is?
 
     state = 1
     j = 0
