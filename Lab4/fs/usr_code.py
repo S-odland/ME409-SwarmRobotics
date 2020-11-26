@@ -6,18 +6,18 @@ def usr(robot):
 
     R = 0.25 ## radius of separation for robots
 
-	## function to align heading of robot with desired angle -- error of 10%
+	## function to align heading of robot with desired angle -- error of 10
     def alignHeading(theta,phi):
-        
+        e = theta - phi
         ## the idea with this conditional is that there are four checks to see if we want left turning or right turning for the shortest degree rotation
-        if ((phi < 0 and theta > phi) or (phi < 0 and phi < theta < (math.pi + phi))) or ((phi > 0 and theta > phi) or (phi > 0 and (math.pi - phi) < theta < phi)):
-            turn_r = -1
-            turn_l = 1
-        else:
+        if (e < 0 and abs(e) < 180) or (e > 0 and abs(e) > 180):
             turn_r = 1
             turn_l = -1
+        else:
+            turn_r = -1
+            turn_l = 1
         
-        if abs(theta - phi) > 0.1:
+        if abs(e) > 0.1:
             #robot.set_vel(-75,75)
             robot.set_vel(75 + turn_l*25,75 + turn_r*25)
             print(turn_l,turn_r)
