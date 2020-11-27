@@ -4,26 +4,34 @@ def usr(robot):
     import timeit
     import time
 
-    R = 0.45 ## radius of separation for robots
+    R = 0.75 ## radius of separation for robots
 
 	## function to align heading of robot with desired angle -- error of 10
     def alignHeading(theta,phi):
         e = theta - phi
         ## the idea with this conditional is that there are four checks to see if we want left turning or right turning for the shortest degree rotation
         if (e < 0 and abs(e) < 180) or (e > 0 and abs(e) > 180):
-            turn_r = 1
-            turn_l = -1
+            turn_r = abs(e)
+            turn_l = -abs(e)
         else:
-            turn_r = -1
-            turn_l = 1
+            turn_r = -abs(e)
+            turn_l = abs(e)
         
         if abs(e) > 0.1:
             #robot.set_vel(-75,75)
-            robot.set_vel(75 + turn_l*25,75 + turn_r*25)
+            robot.set_vel(50 + turn_l*50,50 + turn_r*50)
             return 0
         else:
             robot.set_vel(100,100)
             return 1
+    
+    def normUnit(vec):
+        mag_vec = math.hypot(vec[0],vec[1])
+        if mag_vec == 0:
+            vec = [0,0]
+        else:
+            vec = [vec[0]/mag_vec,vec[1]/mag_vec] ## gives unit vector of taxis
+        return vec
 
     state = 1
     neighbors = []
@@ -41,18 +49,8 @@ def usr(robot):
             pos_t = robot.get_pose()
             if pos_t:
                 pos = pos_t
-                mag_vec = math.hypot(pos[0],pos[1])
-                if mag_vec == 0:
-                    mig_vec = [0,0]
-                    state = 2
-                else:
-                    mig_vec = [-pos[0]/mag_vec,-pos[1]/mag_vec] ## gives unit vector of taxis
-                    state = 2
-
-        if state == 2:
-            pos_t = robot.get_pose()
-            if pos_t:
-                pos = pos_t
+                vec = [-pos[0],-pos[1]]
+                mig_vec = normUnit(vec)
                 robot.send_msg(struct.pack("fffi",pos[0],pos[1],pos[2],robot.id))
             msgs = robot.recv_msg()
             if len(msgs) > 0:
@@ -87,19 +85,20 @@ def usr(robot):
                 coh_vec = [-(pos[0] - com[0]),-(pos[1] - com[1])]
                 i = 0
                 neighbors = []
-                state = 3
+                state = 2
 
-        if state == 3:
-            if math.hypot(sep_vec_s[0],sep_vec_s[1]) > 8:
-                sep_vec_s[0] = sep_vec_s[0]/8
-                sep_vec_s[1] = sep_vec_s[1]/8
+        if state == 2:
+            #normalize vectors to 1 (a unit vector)
+            sep_vec_s = normUnit(sep_vec_s)
+            aln_vec = normUnit(aln_vec)
+            coh_vec = normUnit(coh_vec)
             # found that the repulsion vec weight to be higher made the brazil effect clearer
             pos_t = robot.get_pose()
             if pos_t:
                 pos = pos_t
                 # summing up vector
-                tot_vec = [1.3*coh_vec[0] + (1/6)*mig_vec[0] + sep_vec_s[0] + 1.2*aln_vec[0], \
-                           1.3*coh_vec[1] + (1/6)*mig_vec[1] + sep_vec_s[1] + 1.2*aln_vec[1]]
+                tot_vec = [coh_vec[0] + (1/8)*mig_vec[0] + 1.2*sep_vec_s[0] + aln_vec[0], \
+                           coh_vec[1] + (1/8)*mig_vec[1] + 1.2*sep_vec_s[1] + aln_vec[1]]
                 phi = math.atan2(tot_vec[1],tot_vec[0])
                 aligned = alignHeading(pos[2],phi)
                 if aligned:
