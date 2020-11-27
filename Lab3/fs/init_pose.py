@@ -40,7 +40,7 @@ def init(swarmsize, x, y, theta, a_ids):
         y[i] = (i % 10 ) * 0.3-1
         x[i] = (i / 10 ) * 0.3-1
         a_ids[i] = 0
-        theta[i] = 0
+        theta[i] = random.uniform(-math.pi, math.pi)
         j = i % 3
         if j == 0:
             a_ids[i]=0
