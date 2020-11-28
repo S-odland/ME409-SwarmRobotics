@@ -4,7 +4,7 @@ def usr(robot):
     import timeit
     import time
 
-    R = 0.75 ## radius of separation for robots
+    R = 5 ## radius of separation for robots
 
 	## function to align heading of robot with desired angle -- error of 10
     def alignHeading(theta,phi):
@@ -19,10 +19,11 @@ def usr(robot):
         
         if abs(e) > 0.1:
             #robot.set_vel(-75,75)
-            robot.set_vel(50 + turn_l*50,50 + turn_r*50)
+            robot.set_vel(55 + turn_l*45,55 + turn_r*45)
             return 0
         else:
             robot.set_vel(100,100)
+
             return 1
     
     def normUnit(vec):
@@ -97,8 +98,8 @@ def usr(robot):
             if pos_t:
                 pos = pos_t
                 # summing up vector
-                tot_vec = [coh_vec[0] + (1/8)*mig_vec[0] + 1.2*sep_vec_s[0] + aln_vec[0], \
-                           coh_vec[1] + (1/8)*mig_vec[1] + 1.2*sep_vec_s[1] + aln_vec[1]]
+                tot_vec = [coh_vec[0] + 1/1.5*mig_vec[0] + 1.1*sep_vec_s[0] + aln_vec[0], \
+                           coh_vec[1] + 1/1.5*mig_vec[1] + 1.1*sep_vec_s[1] + aln_vec[1]]
                 phi = math.atan2(tot_vec[1],tot_vec[0])
                 aligned = alignHeading(pos[2],phi)
                 if aligned:

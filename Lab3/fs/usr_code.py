@@ -100,7 +100,7 @@ def usr(robot):
                 # summing up vector
                 tot_vec = [coh_vec[0] + (1/(8*math.sqrt(2)))*mig_vec[0] + 1.2*sep_vec_s[0] + aln_vec[0], \
                            coh_vec[1] + (1/(8*math.sqrt(2)))*mig_vec[1] + 1.2*sep_vec_s[1] + aln_vec[1]]
-                phi = math.atan2(tot_vec[1] ,aln_vec[0])
+                phi = math.atan2(sep_vec_s[1] ,sep_vec_s[0])
                 aligned = alignHeading(pos[2],phi)
                 if aligned:
                     sep_vec_s = [0,0]
