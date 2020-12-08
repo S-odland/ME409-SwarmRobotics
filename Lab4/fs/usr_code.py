@@ -6,7 +6,7 @@ def usr(robot):
 
     R = 5 ## radius of separation for robots
 
-	## function to align heading of robot with desired angle -- error of 10
+	## function to align heading of robot with desired angle -- error of 10 radians
     def alignHeading(theta,phi):
         e = theta - phi
         ## the idea with this conditional is that there are four checks to see if we want left turning or right turning for the shortest degree rotation
@@ -25,7 +25,7 @@ def usr(robot):
             robot.set_vel(100,100)
 
             return 1
-    
+    # functions to normalize vectors to unit vectors
     def normUnit(vec):
         mag_vec = math.hypot(vec[0],vec[1])
         if mag_vec == 0:
@@ -41,9 +41,8 @@ def usr(robot):
     com = [0,0]
     al_h = [0,0]
 
-    ## state 1: migration vector
-    ## state 2: separation, cohesion, alignment vector
-    ## state 3: summation and alignment
+    ## state 1: migration, separation, cohesion, alignment vector
+    ## state 2: summation and alignment
     
     while 1:
         if state == 1:
@@ -65,7 +64,7 @@ def usr(robot):
                     if rAct < R:
                         weight = 1/(R-rAct)
                         sep_vec = [round(weight*(pos[0]-x),2),round(weight*(pos[1]-y),2)]
-                        #make sure that this robot hasn't been calculated in vector sum
+                        #make sure that this robot hasn't been calculated in vector sums
                         if rId not in neighbors:
                             al_h[0] += math.cos(theta)
                             al_h[1] += math.sin(theta)
@@ -74,8 +73,8 @@ def usr(robot):
                             com[1] += y
                             sep_vec_s[0] += sep_vec[0]
                             sep_vec_s[1] += sep_vec[1]
-            # i is the inner loop (recieved messages) j is outer loop -- ensures that lone robots dont get stuck in state 2
-            if i > 20:
+            # each robot will recieve min 19 messages (20 total robots in the swarm)
+            if i > 19:
                 ## center of mass of all the robots
                 com[0] = com[0]/(len(neighbors) + 1)
                 com[1] = com[1]/(len(neighbors) + 1)
@@ -89,17 +88,15 @@ def usr(robot):
                 state = 2
 
         if state == 2:
-            #normalize vectors to 1 (a unit vector)
             sep_vec_s = normUnit(sep_vec_s)
             aln_vec = normUnit(aln_vec)
             coh_vec = normUnit(coh_vec)
-            # found that the repulsion vec weight to be higher made the brazil effect clearer
             pos_t = robot.get_pose()
             if pos_t:
                 pos = pos_t
                 # summing up vector
-                tot_vec = [coh_vec[0] + 1/1.5*mig_vec[0] + 1.1*sep_vec_s[0] + aln_vec[0], \
-                           coh_vec[1] + 1/1.5*mig_vec[1] + 1.1*sep_vec_s[1] + aln_vec[1]]
+                tot_vec = [coh_vec[0] + 1/1.3*mig_vec[0] + 1.2*sep_vec_s[0] + aln_vec[0], \
+                           coh_vec[1] + 1/1.3*mig_vec[1] + 1.2*sep_vec_s[1] + aln_vec[1]]
                 phi = math.atan2(tot_vec[1],tot_vec[0])
                 aligned = alignHeading(pos[2],phi)
                 if aligned:
